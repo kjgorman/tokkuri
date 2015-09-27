@@ -13,7 +13,4 @@
       hash)))
 
 (defn find-session [lookup setter key]
-  (let [response (lookup key)]
-    (if-not (nil? response)
-      response
-      (create-session setter key))))
+  (or (lookup key) (create-session setter key)))

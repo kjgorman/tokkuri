@@ -4,12 +4,14 @@
             [tokkuri.session :refer :all]
             [tokkuri.storage.redis :as redis :refer [get-session set-session]]))
 
-(defn get-or-set-session [address]
-  (find-session redis/get-session redis/set-session address))
+(defn get-or-set-session [key]
+  (find-session redis/get-session redis/set-session key))
 
 (defroutes app
   (GET "/" [] "{ \"hello\": \"world\" }")
-  (GET "/session" { :keys [remote-addr] } (get-or-set-session remote-addr)))
+  (GET "/session/:team"
+       [team]
+       (get-or-set-session team)))
 
 (def handler
   (-> app
