@@ -8,9 +8,7 @@
 
 (defn- create-session [setter key]
   (let [hash (-> (str (nix-time)) (sha1-hmac salt))]
-    (do
-      (setter key hash)
-      hash)))
+    (setter key hash)))
 
 (defn find-session [lookup setter key]
   (or (lookup key) (create-session setter key)))

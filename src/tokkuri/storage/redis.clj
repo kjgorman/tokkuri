@@ -11,8 +11,10 @@
 (defmacro wcar* [& body]
   `(car/wcar local-instance ~@body))
 
-(defn get-session [session-key]
-  (wcar* (car/get session-key)))
+(defn get-key [key]
+  (wcar* (car/get key)))
 
-(defn set-session [session-key session-value]
-  (wcar* (car/setex session-key session-ttl-seconds session-value)))
+(defn set-with-expiry [key value]
+  (do
+    (wcar* (car/setex key session-ttl-seconds value))
+    value))
