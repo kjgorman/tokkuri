@@ -9,3 +9,9 @@
 
 (defn bad-request-response [message]
   (with-status 400 (clojure.string/join ["{ \"reason\": \"" message "\" }"])))
+
+(defn server-error-response []
+  (with-status 500 "{ \"error\": \"failed to read\" }"))
+
+(defn success-response [chunk]
+  (with-status 200 (clojure.string/join ["{ \"success\": \"" chunk "\" }"])))

@@ -14,6 +14,9 @@
 (defn get-key [key]
   (wcar* (car/get key)))
 
+(defn get-ttl [key]
+  (wcar* (car/ttl key)))
+
 (defn set-with-expiry [key value]
   (do
     (wcar* (car/setex key session-ttl-seconds value))
