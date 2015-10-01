@@ -44,7 +44,7 @@
 (defn get-next-chunk [team session-request]
   (let [session-value (redis/get-key team)]
     (if (or (nil? team) (not= session-request session-value))
-      (bad-request-response "You need a session token from /t/<team_name>/session")
+      (unauthorised-response "You need a session token from /t/<team_name>/session")
       (decide-response session-value))))
 
 (defroutes app
@@ -52,6 +52,8 @@
            (GET "/session" [] (get-or-set-session team)))
   (context "/s/:session/:team" [session team]
            (GET "/next" [] (get-next-chunk team session)))
+  (GET "/f/:session/:secret" [session secret]
+       (perhaps-winners session secret))
   (not-found (not-found-response)))
 
 (def handler

@@ -1,5 +1,7 @@
 (ns tokkuri.secret
-  (require [pandect.algo.sha1 :refer [sha1-hmac]]))
+  (require [pandect.algo.sha1 :refer [sha1-hmac]]
+           [tokkuri.storage.redis :as redis :refer [get-ttl]]
+           [tokkuri.responses :refer :all]))
 
 (def secret [
              "I keep buyin’ shit" "just make sure you keep track of it all"
@@ -15,7 +17,7 @@
 (def passcode "asterix")
 
 (defn- next-chunk [progress]
-  (if (= progress 16)
+  (if (= (int progress) 16)
     passcode
     (nth secret progress)))
 
@@ -24,3 +26,12 @@
 
 (defn get-secret-for [progress session-key]
   (-> (next-chunk progress) (hash-chunk session-key)))
+
+(defn- winners [session-key]
+  (let [remaining (redis/get-ttl session-key)]
+    (success-response (clojure.string/join ["you got it with " (str remaining) " seconds remaining"]))))
+
+(defn perhaps-winners [session submitted]
+  (if (= submitted (sha1-hmac passcode session))
+    (winners session)
+    (bad-request-response "incorrect attempt")))

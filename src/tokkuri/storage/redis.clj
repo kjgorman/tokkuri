@@ -1,7 +1,7 @@
 (ns tokkuri.storage.redis
   (:require [taoensso.carmine :as car :refer (wcar get setex)]))
 
-(def session-ttl-seconds 120)
+(def session-ttl-seconds 60)
 
 (def local-instance
   {:pool {}
