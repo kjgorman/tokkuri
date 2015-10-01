@@ -43,13 +43,18 @@
         fail (int (* rate 100))]
     (>= fail (rand-int 100))))
 
+(defn- handle-nan [value]
+  (if (Double/isNaN value)
+    0.15
+    value))
+
 (defn handle-failure [ttl rate set-rate]
   (let [log-scale (Math/exp rate)
         range (- Math/E (* 0.7 log-scale))
         ;; TODO(kjgorman): we shouldn't implicitly rely on the timeout
         ;;                 value here for the ttl conditioning.
         step (* (/ (- ttl 40) 20) range)
-        new-rate (clamp (Math/log (* log-scale step)) 0.15 1)]
+        new-rate (handle-nan (clamp (Math/log (* log-scale step)) 0.15 1))]
     (println "adjusting" log-scale range step new-rate)
     (set-rate new-rate)
     (server-error-response)))
